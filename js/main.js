@@ -191,59 +191,62 @@
   /*--------------------------------------------------------------
     7. Ajax Contact Form And Appointment
   --------------------------------------------------------------*/
-  // Contact Form
-  function formValidation() {
-    if ($.exists('#contact-form #submit')) {
-      $('#st-alert').hide();
-      $('#contact-form #submit').on('click', function () {
-        var name = $('#name').val();
-        var subject = $('#subject').val();
-        var phone = $('#phone').val();
-        var email = $('#email').val();
-        var msg = $('#msg').val();
-        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+  // Contact Form using Web3Forms
+function formValidation() {
+  if ($.exists('#contact-form #submit')) {
+    $('#st-alert').hide();
 
-        if (!regex.test(email)) {
-          $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> Please Enter Valid Email.</div>');
-          return false;
-        }
+    $('#contact-form').on('submit', function (e) {
+      e.preventDefault(); // Stop default form submission
 
-        name = $.trim(name);
-        subject = $.trim(subject);
-        phone = $.trim(phone);
-        email = $.trim(email);
-        msg = $.trim(msg);
+      var name = $('#name').val().trim();
+      var subject = $('#subject').val().trim();
+      var email = $('#email').val().trim();
+      var msg = $('#msg').val().trim();
+      var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
-        if (name != '' && email != '' && msg != '') {
-          var values = "name=" + name +
-            "&subject=" + subject +
-            "&phone=" + phone +
-            "&email=" + email +
-            "&msg=" + msg;
-          $.ajax({
-            type: "POST",
-            url: "assets/php/mail.php",
-            data: values,
-            success: function () {
-              $('#name').val('');
-              $('#subject').val('');
-              $('#phone').val('');
-              $('#email').val('');
-              $('#msg').val('');
+      if (!regex.test(email)) {
+        $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> Please Enter Valid Email.</div>');
+        return;
+      }
 
-              $('#st-alert').fadeIn().html('<div class="alert alert-success"><strong>Success!</strong> Email has been sent successfully.</div>');
-              setTimeout(function () {
-                $('#st-alert').fadeOut('slow');
-              }, 4000);
+      if (name !== '' && email !== '' && msg !== '') {
+        // Send data to Web3Forms API
+        $.ajax({
+          type: "POST",
+          url: "https://api.web3forms.com/submit",
+          data: {
+            access_key: "0424763a-b8f9-4963-95b9-cbc543094809",
+            name: name,
+            subject: subject,
+            email: email,
+            message: msg
+          },
+          dataType: "json",
+          success: function (response) {
+            if (response.success) {
+              $('#contact-form')[0].reset();
+              $('#st-alert').fadeIn().html('<div class="alert alert-success"><strong>Success!</strong> Your message has been sent successfully.</div>');
+            } else {
+              $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> ' + response.message + '</div>');
             }
-          });
-        } else {
-          $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> All fields are required.</div>');
-        }
-        return false;
-      });
-    }
+
+            setTimeout(function () {
+              $('#st-alert').fadeOut('slow');
+            }, 4000);
+          },
+          error: function () {
+            $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> Something went wrong. Please try again later.</div>');
+          }
+        });
+
+      } else {
+        $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> All fields are required.</div>');
+      }
+    });
   }
+}
+
 
 
   /*--------------------------------------------------------------
