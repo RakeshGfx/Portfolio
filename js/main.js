@@ -193,59 +193,61 @@
   --------------------------------------------------------------*/
   // Contact Form using Web3Forms
 function formValidation() {
-  if ($.exists('#contact-form #submit')) {
-    $('#st-alert').hide();
+  $('#st-alert').hide();
 
-    $('#contact-form').on('submit', function (e) {
-      e.preventDefault(); // Stop default form submission
+  $('#contact-form').on('submit', function (e) {
+    e.preventDefault(); // Stop page reload
 
-      var name = $('#name').val().trim();
-      var subject = $('#subject').val().trim();
-      var email = $('#email').val().trim();
-      var msg = $('#msg').val().trim();
-      var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+    var name = $('#name').val().trim();
+    var subject = $('#subject').val().trim();
+    var email = $('#email').val().trim();
+    var msg = $('#msg').val().trim();
+    var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
 
-      if (!regex.test(email)) {
-        $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> Please Enter Valid Email.</div>');
-        return;
-      }
+    if (!regex.test(email)) {
+      $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> Please Enter Valid Email.</div>');
+      return;
+    }
 
-      if (name !== '' && email !== '' && msg !== '') {
-        // Send data to Web3Forms API
-        $.ajax({
-          type: "POST",
-          url: "https://api.web3forms.com/submit",
-          data: {
-            access_key: "0424763a-b8f9-4963-95b9-cbc543094809",
-            name: name,
-            subject: subject,
-            email: email,
-            message: msg
-          },
-          dataType: "json",
-          success: function (response) {
-            if (response.success) {
-              $('#contact-form')[0].reset();
-              $('#st-alert').fadeIn().html('<div class="alert alert-success"><strong>Success!</strong> Your message has been sent successfully.</div>');
-            } else {
-              $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> ' + response.message + '</div>');
-            }
-
-            setTimeout(function () {
-              $('#st-alert').fadeOut('slow');
-            }, 4000);
-          },
-          error: function () {
-            $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> Something went wrong. Please try again later.</div>');
+    if (name !== '' && email !== '' && msg !== '') {
+      $.ajax({
+        type: "POST",
+        url: "https://api.web3forms.com/submit",
+        data: {
+          access_key: "0424763a-b8f9-4963-95b9-cbc543094809",
+          name: name,
+          subject: subject,
+          email: email,
+          message: msg
+        },
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            $('#contact-form')[0].reset();
+            $('#st-alert').fadeIn().html('<div class="alert alert-success"><strong>Success!</strong> Your message has been sent successfully.</div>');
+          } else {
+            $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> ' + response.message + '</div>');
           }
-        });
 
-      } else {
-        $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> All fields are required.</div>');
-      }
-    });
-  }
+          setTimeout(function () {
+            $('#st-alert').fadeOut('slow');
+          }, 4000);
+        },
+        error: function () {
+          $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Error!</strong> Something went wrong. Please try again later.</div>');
+        }
+      });
+    } else {
+      $('#st-alert').fadeIn().html('<div class="alert alert-danger"><strong>Warning!</strong> All fields are required.</div>');
+    }
+  });
 }
+
+// Call function after DOM loads
+$(document).ready(function () {
+  formValidation();
+});
+
 
 
 
