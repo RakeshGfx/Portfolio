@@ -872,14 +872,13 @@ $$$$$$$$$$$  Sample Div end  $$$$$$$$$$$$$$$$
       <h3 class="st-contact-title">Just say Hello</h3>
       <div id="st-alert"></div>
 
-      <!-- ✅ Updated Contact Form with Web3Forms -->
       <form action="https://api.web3forms.com/submit" method="POST" class="st-contact-form" id="contact-form">
         
-        <!-- Your Web3Forms Access Key -->
+        <!-- Web3Forms Access Key -->
         <input type="hidden" name="access_key" value="96da144b-62f7-4b5c-84bd-4e9873d21888">
-        
-        <!-- Optional: Redirect to success page -->
-        <!-- <input type="hidden" name="redirect" value="https://web3forms.com/success"> -->
+
+        <!-- Honeypot Spam Protection (required by Web3Forms) -->
+        <input type="checkbox" name="botcheck" class="hidden" style="display:none;">
 
         <div class="st-form-field">
           <input type="text" id="name" name="name" placeholder="Your Name" required>
@@ -897,13 +896,38 @@ $$$$$$$$$$$  Sample Div end  $$$$$$$$$$$$$$$$
           <textarea cols="30" rows="10" id="msg" name="message" placeholder="Your Message" required></textarea>
         </div>
 
-        <!-- Honeypot Spam Protection -->
-        <!-- <input type="checkbox" name="botcheck" class="hidden" style="display:none;"> -->
-
-        <button class="st-btn st-style1 st-color1" type="submit" id="submit" name="submit">Send message</button>
+        <button class="st-btn st-style1 st-color1" type="submit" id="submit" name="submit">
+          Send message
+        </button>
       </form>
+
+      <!-- ✅ JS to show success/error messages -->
+      <script>
+        const form = document.getElementById("contact-form");
+        const alertBox = document.getElementById("st-alert");
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const formData = new FormData(form);
+
+          const response = await fetch(form.action, {
+            method: form.method,
+            body: formData,
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            alertBox.innerHTML = "<p style='color:green;'>✅ Message sent successfully!</p>";
+            form.reset();
+          } else {
+            alertBox.innerHTML = "<p style='color:red;'>❌ Something went wrong. Please try again.</p>";
+          }
+        });
+      </script>
     </div>
     <div class="st-height-b0 st-height-lg-b30"></div>
+
 
 
         <div class="col-lg-6">
